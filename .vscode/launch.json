@@ -151,7 +151,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build-prove-Develop03",
-            "program": "${workspaceFolder}/prove/Develop03/bin/Debug/net8.0/Develop03.dll",
+            "program": "${workspaceFolder}/prove/Develop03/bin/Debug/net9.0/Develop03.dll",
             "args": [],
             "cwd": "${workspaceFolder}/prove/Develop03",
             "console": "integratedTerminal",
