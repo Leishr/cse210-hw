@@ -3,75 +3,12 @@ using System.Collections.Generic;
 
 namespace EternalQuestSimple
 {
-    // Base class for all goals
-    public abstract class Goal
-    {
-        public string Name { get; set; }
-        public int Points { get; set; }
-        public abstract void RecordEvent();
-        public abstract string GetStatus();
-    }
-
-    public class SimpleGoal : Goal
-    {
-        public bool Completed { get; set; } = false;
-
-        public override void RecordEvent()
-        {
-            if (!Completed)
-            {
-                Completed = true;
-                Console.WriteLine($"Goal completed! You earned {Points} points!");
-            }
-            else
-            {
-                Console.WriteLine("This goal is already completed.");
-            }
-        }
-
-        public override string GetStatus() => Completed ? "[X]" : "[ ]";
-    }
-
-    public class EternalGoal : Goal
-    {
-        public override void RecordEvent()
-        {
-            Console.WriteLine($"You recorded {Name} and earned {Points} points!");
-        }
-
-        public override string GetStatus() => "[∞]";
-    }
-
-    public class ChecklistGoal : Goal
-    {
-        public int CompletedTimes { get; set; } = 0;
-        public int TargetTimes { get; set; }
-        public int BonusPoints { get; set; }
-
-        public override void RecordEvent()
-        {
-            if (CompletedTimes < TargetTimes)
-            {
-                CompletedTimes++;
-                Console.WriteLine($"You earned {Points} points for {Name}!");
-                if (CompletedTimes == TargetTimes)
-                    Console.WriteLine($"Checklist complete! Bonus {BonusPoints} points!");
-            }
-            else
-            {
-                Console.WriteLine("Checklist goal already completed!");
-            }
-        }
-
-        public override string GetStatus() => $"[{CompletedTimes}/{TargetTimes}]";
-    }
-
     class Program
     {
         static List<Goal> goals = new List<Goal>();
         static int totalPoints = 0;
 
-        static void Main(string[] args)
+        static void Main()
         {
             bool exit = false;
             while (!exit)
@@ -104,26 +41,44 @@ namespace EternalQuestSimple
             Console.WriteLine("1. Simple  2. Eternal  3. Checklist");
             Console.Write("Type: ");
             string type = Console.ReadLine();
+
             Console.Write("Goal name: ");
             string name = Console.ReadLine();
+
             Console.Write("Points: ");
             int points = int.Parse(Console.ReadLine());
 
-            Goal goal = null;
-            if (type == "1") goal = new SimpleGoal { Name = name, Points = points };
-            else if (type == "2") goal = new EternalGoal { Name = name, Points = points };
-            else if (type == "3")
+            Goal goal = type switch
             {
-                Console.Write("Target times: ");
-                int target = int.Parse(Console.ReadLine());
-                Console.Write("Bonus points: ");
-                int bonus = int.Parse(Console.ReadLine());
-                goal = new ChecklistGoal { Name = name, Points = points, TargetTimes = target, BonusPoints = bonus };
-            }
-            else { Console.WriteLine("Invalid type."); return; }
+                "1" => new SimpleGoal { Name = name, Points = points },
+                "2" => new EternalGoal { Name = name, Points = points },
+                "3" => CreateChecklistGoal(name, points),
+                _ => null
+            };
 
-            goals.Add(goal);
-            Console.WriteLine("Goal added!");
+            if (goal != null)
+            {
+                goals.Add(goal);
+                Console.WriteLine("Goal added!");
+            }
+            else Console.WriteLine("Invalid type.");
+        }
+
+        static ChecklistGoal CreateChecklistGoal(string name, int points)
+        {
+            Console.Write("Target times: ");
+            int target = int.Parse(Console.ReadLine());
+
+            Console.Write("Bonus points: ");
+            int bonus = int.Parse(Console.ReadLine());
+
+            return new ChecklistGoal
+            {
+                Name = name,
+                Points = points,
+                TargetTimes = target,
+                BonusPoints = bonus
+            };
         }
 
         static void RecordEvent()
